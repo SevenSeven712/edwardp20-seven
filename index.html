@@ -18,8 +18,8 @@
   a:hover { text-decoration: underline; }
   .page { max-width: 920px; margin: 0 auto; padding: 0 24px; }
   .hero { padding: 64px 0 40px; text-align: center; }
-  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  .hero > * { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  
+  
   .avatar-wrap { animation-delay: 0.1s; position: relative; width: 120px; height: 120px; margin: 0 auto 22px; }
   .avatar-wrap::before { content: ""; position: absolute; inset: -22px; border-radius: 50%; background: radial-gradient(circle, rgba(47,143,128,0.24) 0%, rgba(47,143,128,0.07) 45%, transparent 70%); animation: glowPulse 3.6s ease-in-out infinite; pointer-events: none; will-change: opacity; }
   .avatar-wrap::after { content: ""; position: absolute; inset: -10px; border-radius: 50%; border: 1px solid rgba(47,143,128,0.38); animation: ringPulse 3.6s ease-out infinite; pointer-events: none; will-change: transform, opacity; }
@@ -46,7 +46,7 @@
   .wiki-link::before { content: ""; position: absolute; bottom: 115%; left: 50%; transform: translateX(-50%) translateY(5px); border-width: 5px; border-style: solid; border-color: rgba(15, 32, 28, 0.92) transparent transparent transparent; opacity: 0; pointer-events: none; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); z-index: 10; }
   .wiki-link:hover::after, .wiki-link:hover::before { opacity: 1; transform: translateX(-50%) translateY(0); }
   .grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-  .card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 8px; overflow: hidden; backdrop-filter: var(--glass-blur); box-shadow: 0 2px 12px rgba(0,0,0,0.10); contain: layout paint style; content-visibility: auto; contain-intrinsic-size: auto 150px; transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 8px; overflow: hidden; backdrop-filter: var(--glass-blur); box-shadow: 0 2px 12px rgba(0,0,0,0.10); contain: layout paint style;   transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);  }
   .card:hover { border-color: var(--glass-border-strong); background-color: var(--glass-hover); box-shadow: var(--glass-shadow); transform: translateY(-3px); }
   .card.open { border-color: var(--accent); background-color: var(--glass-hover); }
   .card-head { padding: 18px 20px; cursor: pointer; }
@@ -91,9 +91,220 @@
   .view.active { display: block; animation: viewFadeIn 0.3s ease; }
   #view-wiki.active { display: flex; min-height: 100vh; }
   @keyframes viewFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ===== 维基专属样式（合并自 wiki.html） ===== */
+  .sidebar {
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+    left: 0; top: 0;
+    background: var(--glass);
+    border-right: 1px solid var(--glass-border);
+    backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    padding: 24px 0;
+    overflow-y: auto;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar-header {
+    padding: 0 24px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 6px;
+    background: rgba(255,255,255,0.6); border: 1px solid var(--border);
+    font-size: 13px; font-weight: 500; color: var(--text);
+    text-decoration: none; transition: all 0.2s;
+    margin-bottom: 16px;
+  }
+  .back-btn:hover { background: #fff; color: var(--accent); border-color: var(--accent); text-decoration: none; }
+  .back-btn svg { width: 14px; height: 14px; }
+  
+  .sidebar-title {
+    font-size: 18px; font-weight: 700; color: var(--text-strong);
+    letter-spacing: 0.5px;
+  }
+  .sidebar-subtitle {
+    font-size: 12px; color: var(--muted); margin-top: 4px;
+  }
+
+  /* ===== 折叠面板样式 ===== */
+  .nav-group {
+    margin-bottom: 4px;
+  }
+  .nav-group-title {
+    padding: 12px 24px;
+    font-size: 14px; font-weight: 600; color: var(--text-strong);
+    cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    user-select: none;
+    transition: background-color 0.2s;
+  }
+  .nav-group-title:hover {
+    background-color: rgba(255,255,255,0.4);
+  }
+  .nav-group-title svg {
+    width: 14px; height: 14px;
+    transition: transform 0.3s ease;
+    color: var(--muted);
+  }
+  .nav-group.open .nav-group-title svg {
+    transform: rotate(180deg);
+  }
+  .nav-list {
+    list-style: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    background-color: rgba(255,255,255,0.2);
+  }
+  .nav-group.open .nav-list {
+    max-height: 500px;
+  }
+  .nav-item a {
+    display: block;
+    padding: 8px 24px 8px 36px;
+    font-size: 13.5px; color: var(--text);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.2s;
+  }
+  .nav-item a:hover {
+    background: rgba(255,255,255,0.5);
+    color: var(--accent);
+  }
+  .nav-item a.active {
+    background: rgba(47, 143, 128, 0.08);
+    color: var(--accent);
+    border-left-color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ===== 右侧正文区域 ===== */
+  .main-content {
+    margin-left: 280px;
+    flex: 1;
+    padding: 48px 40px 80px;
+    max-width: 900px;
+  }
+  
+  .content-section {
+    margin-bottom: 56px;
+    scroll-margin-top: 40px;
+  }
+  
+  /* 页面入场动画 */
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .sidebar { animation: slideInLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .content-section {  }
+  
+  /* 通过 :target 实现跳转后的短暂高亮脉冲 */
+  @keyframes highlightPulse {
+    0% { box-shadow: 0 0 0 0 rgba(47, 143, 128, 0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(47, 143, 128, 0.1); }
+    100% { box-shadow: 0 4px 16px rgba(23,62,56,0.05); }
+  }
+  .content-section:target .wiki-card {
+    animation: highlightPulse 1.5s ease-out;
+    border-color: var(--glass-border-strong);
+  }
+  
+  /* 给每个章节根据顺序分配延迟（用 nth-child 或 js 更稳，这里统一定义基础延迟即可） */
+  .content-section:nth-child(1) { animation-delay: 0.1s; }
+  .content-section:nth-child(2) { animation-delay: 0.15s; }
+  .content-section:nth-child(3) { animation-delay: 0.2s; }
+  .content-section:nth-child(4) { animation-delay: 0.25s; }
+  .content-section:nth-child(5) { animation-delay: 0.3s; }
+  .content-section:nth-child(6) { animation-delay: 0.35s; }
+  .content-section:nth-child(7) { animation-delay: 0.4s; }
+  .content-section:nth-child(8) { animation-delay: 0.45s; }
+  .content-section:nth-child(9) { animation-delay: 0.5s; }
+  .content-section:nth-child(10) { animation-delay: 0.55s; }
+  .content-section h2 {
+    font-size: 24px; color: var(--text-strong); margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--border);
+  }
+  .content-section h2::before {
+    content: ""; display: block; width: 4px; height: 22px;
+    background: var(--accent); border-radius: 2px;
+  }
+
+  .wiki-card {
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 12px; padding: 28px;
+    backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    box-shadow: 0 4px 16px rgba(23,62,56,0.05);
+    margin-bottom: 24px;
+    transition: border-color 0.2s, background-color 0.2s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  }
+  .wiki-card:hover {
+    border-color: var(--glass-border-strong); background-color: var(--glass-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(23,62,56,0.08);
+  }
+  .wiki-card h3 {
+    font-size: 20px; color: var(--text-strong); margin-bottom: 12px;
+    display: inline-block; font-weight: 600;
+  }
+  .wiki-card .tag {
+    font-size: 11px; color: var(--accent); background: var(--accent-soft);
+    padding: 3px 10px; border-radius: 4px; margin-left: 10px;
+    border: 1px solid rgba(47,143,128,0.2); vertical-align: middle;
+    font-weight: 500;
+  }
+  .wiki-card p {
+    font-size: 15px; color: var(--text); margin-bottom: 20px; line-height: 1.8;
+  }
+  .wiki-card .points {
+    list-style: none;
+    background: rgba(255,255,255,0.5); border-radius: 8px; padding: 20px;
+    border: 1px solid var(--border);
+  }
+  .wiki-card .points li {
+    position: relative; padding-left: 20px; font-size: 14px;
+    color: var(--muted); margin-bottom: 10px; line-height: 1.6;
+  }
+  .wiki-card .points li:last-child { margin-bottom: 0; }
+  .wiki-card .points li::before {
+    content: "▹"; position: absolute; left: 0; top: 0;
+    color: var(--accent); font-size: 15px; font-weight: bold;
+  }
+  .wiki-card code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    background: rgba(47,143,128,0.08); padding: 2px 6px; border-radius: 4px;
+    font-size: 13px; color: #2f8f80;
+  }
+
+  /* 移动端适配 */
+  @media (max-width: 820px) {
+    body { flex-direction: column; }
+    .sidebar {
+      width: 100%; height: auto; position: relative;
+      border-right: none; border-bottom: 1px solid var(--glass-border);
+      padding: 16px 0;
+    }
+    .nav-list { max-height: none; display: flex; overflow-x: auto; padding: 0 16px; gap: 8px; background: transparent; }
+    .nav-item a { padding: 8px 16px; border-left: none; border-bottom: 2px solid transparent; white-space: nowrap; border-radius: 6px; }
+    .nav-item a.active { border-left-color: transparent; border-bottom-color: var(--accent); }
+    .nav-group-title { display: none; /* 移动端隐藏大标题直接显示项 */ }
+    .main-content { margin-left: 0; padding: 24px 16px 60px; }
+  }
 </style>
 </head>
 <body>
+
 
 <video id="bg-video" autoplay loop muted playsinline preload="auto" disablepictureinpicture data-src="/edwardp20-seven/video.mp4?v=1"></video>
 <div id="bg-overlay"></div>
@@ -158,207 +369,72 @@
   <div class="sidebar-header">
     <a href="javascript:void(0)" class="back-btn" onclick="switchView('home')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      返回主页
+      <span data-i18n="returnHome">返回主页</span>
     </a>
-    <div class="sidebar-title">edwardp20 项目维基</div>
-    <div class="sidebar-subtitle">基于源码的技术原理解析</div>
+    <div class="sidebar-title" data-i18n="wikiTitle">edwardp20 项目维基</div>
+    <div class="sidebar-subtitle" data-i18n="wikiSubtitle">基于源码的技术原理解析</div>
   </div>
 
   <div class="nav-group open" id="group-algo">
     <div class="nav-group-title" onclick="toggleGroup('group-algo')">
-      算法与逻辑
+      <span data-i18n="grpAlgo">算法与逻辑</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <ul class="nav-list">
       <li class="nav-item"><a href="#cococalc">cococalc</a></li>
-      <li class="nav-item"><a href="#java-basic">-JAVA-</a></li>
+      <li class="nav-item"><a href="#-java-">-JAVA-</a></li>
     </ul>
   </div>
 
   <div class="nav-group" id="group-eng">
     <div class="nav-group-title" onclick="toggleGroup('group-eng')">
-      工程与工具
+      <span data-i18n="grpEng">工程与工具</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <ul class="nav-list">
       <li class="nav-item"><a href="#libihatelogs">libihatelogs</a></li>
       <li class="nav-item"><a href="#myjava-app">myjava-app</a></li>
+        <li class="nav-item"><a href="#aide-termux-unofficialbuild">AIDE-Termux</a></li>
     </ul>
   </div>
 
   <div class="nav-group" id="group-sys">
     <div class="nav-group-title" onclick="toggleGroup('group-sys')">
-      系统与底层
+      <span data-i18n="grpSys">系统与底层</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <ul class="nav-list">
       <li class="nav-item"><a href="#proot">proot</a></li>
-      <li class="nav-item"><a href="#termux">termux-app</a></li>
-      <li class="nav-item"><a href="#tiny-computer">tiny_computer</a></li>
+      <li class="nav-item"><a href="#termux-app-multiusers">termux-app</a></li>
+      <li class="nav-item"><a href="#tiny-computer-lotofpermission">tiny_computer</a></li>
     </ul>
   </div>
 
   <div class="nav-group" id="group-ci">
     <div class="nav-group-title" onclick="toggleGroup('group-ci')">
-      自动化构建
+      <span data-i18n="grpCI">自动化构建</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <ul class="nav-list">
       <li class="nav-item"><a href="#bug-free-eureka">bug-free-eureka</a></li>
       <li class="nav-item"><a href="#edk2-nightly2">edk2-nightly2</a></li>
+        <li class="nav-item"><a href="#edk2-edwardp20-build">edk2-edwardp20-build</a></li>
     </ul>
   </div>
 
   <div class="nav-group" id="group-web">
     <div class="nav-group-title" onclick="toggleGroup('group-web')">
-      前端与网络
+      <span data-i18n="grpWeb">前端与网络</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
     </div>
     <ul class="nav-list">
-      <li class="nav-item"><a href="#github-io">github.io 博客</a></li>
-      <li class="nav-item"><a href="#profile">Profile 渲染</a></li>
+      <li class="nav-item"><a href="#edwardp20-github-io">github.io 博客</a></li>
+      <li class="nav-item"><a href="#edwardp20">Profile 渲染</a></li>
     </ul>
   </div>
 </aside>
-<main class="main-content">
-  
-  <section id="cococalc" class="content-section" data-group="group-algo">
-    <div class="wiki-card">
-      <h3>cococalc <span class="tag">Java · 编译原理</span></h3>
-      <p>这个项目没有使用简单的 <code>eval()</code>，而是完整实现了一个<strong>编译器前端的经典流水线</strong>。它通过词法分析和语法分析，将人类可读的表达式转换为计算机易于计算的格式。</p>
-      <ul class="points">
-        <li><strong>词法分析 (Tokenizer)：</strong> 扫描输入字符串，将字符流拆解为一个个 Token（数字、运算符）。</li>
-        <li><strong>语法分析 (Yard)：</strong> 采用调度场算法（Shunting-yard）。利用栈和优先级表，把中缀表达式（如 1 + 2）转为后缀表达式（如 1 2 +，即逆波兰式）。</li>
-        <li><strong>求值 (Coco)：</strong> 遍历后缀表达式，遇到数字就压栈，遇到运算符则弹出两个元素计算，再将结果压栈，最终得出结果。</li>
-        <li><strong>精度保障：</strong> 底层采用 <code>BigDecimal</code> 而不是普通的 <code>double</code>，完美避免浮点数精度丢失。</li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="java-basic" class="content-section" data-group="group-algo">
-    <div class="wiki-card">
-      <h3>-JAVA- <span class="tag">Java · 控制台交互</span></h3>
-      <p>基础的面向新手控制台练手项目，实现了经典的猜数字游戏。</p>
-      <ul class="points">
-        <li>使用 <code>java.util.Scanner</code> 接收用户输入。</li>
-        <li>使用 <code>java.util.Random</code> 生成 1-100 的随机目标数字。</li>
-        <li>在 <code>while</code> 循环中，通过 <code>if-else</code> 判断输入大小并提示，直到猜中为止。</li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="libihatelogs" class="content-section" data-group="group-eng">
-    <div class="wiki-card">
-      <h3>libihatelogs <span class="tag">Java · 极简库</span></h3>
-      <p>因为反感现代日志框架（如 Log4j）的臃肿而手写的轻量级日志库，零第三方依赖。</p>
-      <ul class="points">
-        <li><strong>NIO 写入：</strong> 底层的 <code>LogWriter</code> 直接调用 Java NIO 的 <code>Files.writeString</code>。</li>
-        <li><strong>追加模式：</strong> 指定 <code>StandardOpenOption.CREATE</code>（不存在则创建）和 <code>StandardOpenOption.APPEND</code>（追加写入），实现日志持久化。</li>
-        <li><strong>级别分发：</strong> 对外暴露统一的 <code>autoLog</code> 接口，内部根据级别（fatal/error/info）解耦到不同的处理器。</li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="myjava-app" class="content-section" data-group="group-eng">
-    <div class="wiki-card">
-      <h3>myjava-app <span class="tag">Java · 构建工具</span></h3>
-      <p>用于学习现代 Java 工程构建与 CI/CD 的练手项目。</p>
-      <ul class="points">
-        <li>采用 <strong>Gradle</strong> 作为构建工具（使用 Kotlin DSL 编写 <code>build.gradle.kts</code>）。</li>
-        <li>配置 <strong>ShadowJar</strong> 插件，将所有依赖打包进单一的 Fat Jar，方便直接运行。</li>
-        <li>包含 <strong>JUnit</strong> 单元测试。</li>
-        <li>配置 <strong>GitHub Actions</strong>，每次提交代码自动触发测试与打包流程。</li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="proot" class="content-section" data-group="group-sys">
-    <div class="wiki-card">
-      <h3>proot <span class="tag">C · 系统调用</span></h3>
-      <p>让你在没有 root 权限的 Linux / Android 上运行 chroot 的核心工具。</p>
-      <ul class="points">
-        <li>利用 Linux 的 <code>ptrace</code>（进程跟踪）系统调用。</li>
-        <li>在用户态拦截进程对文件系统的访问请求，并动态重定向路径。</li>
-        <li>通过伪造根目录环境，让程序以为自己在独立的文件系统中运行，从而不需要特权即可运行完整 Linux 发行版。</li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="termux" class="content-section" data-group="group-sys">
-    <div class="wiki-card">
-      <h3>termux-app-multiusers <span class="tag">Java · Android</span></h3>
-      <p>Termux 的多用户隔离分支。</p>
-      <ul class="points">
-        <li>修改了 Termux 在 Android 原生的用户级隔离逻辑。</li>
-        <li>允许在同一台设备上创建多个相互独立的 Linux 用户环境（不同的环境变量、软件包、主目录），互不干扰。</li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="tiny-computer" class="content-section" data-group="group-sys">
-    <div class="wiki-card">
-      <h3>tiny_computer_lotofpermission <span class="tag">Dart · 移动端虚拟化</span></h3>
-      <p>在 Android 上点击即用的完整 Debian 桌面环境（Fork）。</p>
-      <ul class="points">
-        <li>基于 Dart 开发 Android 前端。</li>
-        <li>App 内部打包了一个完整的 Debian 12 (ARM64) Rootfs 镜像。</li>
-        <li>利用 PRoot 技术挂载该镜像并运行系统。</li>
-        <li>通过 XSDL / VNC 等图形协议，将内部的 XFCE 桌面渲染到手机屏幕上，实现类似 PC 的体验。</li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="bug-free-eureka" class="content-section" data-group="group-ci">
-    <div class="wiki-card">
-      <h3>bug-free-eureka <span class="tag">CI/CD · 云端构建</span></h3>
-      <p>这是一个没有业务代码的纯构建仓库。</p>
-      <ul class="points">
-        <li>利用 GitHub Actions 的免费服务器算力。</li>
-        <li>通过 <code>.github/workflows/build.yml</code> 脚本，定时拉取 MobileGL 源码并在云端完成编译。</li>
-        <li>解决了本地构建环境配置繁琐的问题。</li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="edk2-nightly2" class="content-section" data-group="group-ci">
-    <div class="wiki-card">
-      <h3>edk2-nightly2 <span class="tag">CI/CD · 固件编译</span></h3>
-      <p>UEFI 固件（EDK II）的夜间自动构建节点。</p>
-      <ul class="points">
-        <li>UEFI 源码庞大且编译环境极其复杂。</li>
-        <li>利用 GitHub Actions 设定定时任务（Cron）。</li>
-        <li>每晚自动拉取官方最新源码，配置编译环境并在云端执行编译，生成每日固件。</li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="github-io" class="content-section" data-group="group-web">
-    <div class="wiki-card">
-      <h3>edwardp20.github.io <span class="tag">HTML/JS · 静态博客</span></h3>
-      <p>完全托管于 GitHub Pages 的无后端动态博客。</p>
-      <ul class="points">
-        <li>文章链接形如 <code>viewer.html?md=2.md</code>，利用 URL 查询参数（Query String）传递文件名。</li>
-        <li><code>viewer.html</code> 中的 JS 读取参数后，通过 <code>fetch API</code> 请求同目录下的 Markdown 文件。</li>
-        <li>引入 CDN 版 <code>marked.js</code>，将 Markdown 文本实时转换为 HTML，并注入到 DOM 中。</li>
-        <li>通过仓库根目录的 <code>CNAME</code> 文件，将自定义域名绑定到 GitHub Pages。</li>
-      </ul>
-    </div>
-  </section>
-
-  <section id="profile" class="content-section" data-group="group-web">
-    <div class="wiki-card">
-      <h3>edwardp20 <span class="tag">Profile README</span></h3>
-      <p>GitHub 个人主页的专属仓库。</p>
-      <ul class="points">
-        <li>当仓库名与用户名（edwardp20）完全一致时，GitHub 会识别为 Profile 仓库。</li>
-        <li>仓库根目录的 <code>README.md</code> 会被自动渲染到个人主页的顶部。</li>
-      </ul>
-    </div>
-  </section>
-
-</main>
+<main class="main-content" id="wikiMain"></main>
 </div>
-
 <div class="lang-fab">
   <div class="lang-menu" id="langMenu">
     <button data-lang="zh">中文</button>
@@ -370,85 +446,6 @@
 </div>
 
 <script>
-// ================= 背景视频本地缓存（IndexedDB） =================
-(function initBgVideo() {
-  var video = document.getElementById("bg-video");
-  if (!video) return;
-  var remoteSrc = video.getAttribute("data-src");
-  if (!remoteSrc) return;
-
-  var DB_NAME = "edwardp20-cache";
-  var STORE = "videos";
-  var KEY = "bg-video";
-  var VERSION = "1";
-
-  function openDB() {
-    return new Promise(function(resolve, reject) {
-      var req = indexedDB.open(DB_NAME, 1);
-      req.onupgradeneeded = function(e) {
-        var db = e.target.result;
-        if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE);
-      };
-      req.onsuccess = function() { resolve(req.result); };
-      req.onerror = function() { reject(req.error); };
-    });
-  }
-
-  function getCached() {
-    return openDB().then(function(db) {
-      return new Promise(function(resolve) {
-        var tx = db.transaction(STORE, "readonly");
-        var req = tx.objectStore(STORE).get(KEY);
-        req.onsuccess = function() { resolve(req.result || null); };
-        req.onerror = function() { resolve(null); };
-      });
-    }).catch(function() { return null; });
-  }
-
-  function saveCache(blob) {
-    return openDB().then(function(db) {
-      return new Promise(function(resolve) {
-        var tx = db.transaction(STORE, "readwrite");
-        tx.objectStore(STORE).put({ blob: blob, version: VERSION, ts: Date.now() }, KEY);
-        tx.oncomplete = function() { resolve(true); };
-        tx.onerror = function() { resolve(false); };
-        tx.onabort = function() { resolve(false); };
-      });
-    }).catch(function() { return false; });
-  }
-
-  function playBlob(blob) {
-    var url = URL.createObjectURL(blob);
-    video.src = url;
-    video.play().catch(function() {});
-  }
-
-  function fallbackRemote() {
-    video.src = remoteSrc;
-    video.play().catch(function() {});
-  }
-
-  getCached().then(function(cached) {
-    if (cached && cached.version === VERSION && cached.blob && cached.blob.size > 0) {
-      playBlob(cached.blob);
-      return;
-    }
-    // 首次访问或版本更新：只 fetch 一次，播放 + 存缓存
-    fetch(remoteSrc).then(function(resp) {
-      if (!resp.ok) throw new Error("HTTP " + resp.status);
-      return resp.blob();
-    }).then(function(blob) {
-      if (!blob || blob.size === 0) throw new Error("empty");
-      playBlob(blob);
-      saveCache(blob);
-    }).catch(function() {
-      fallbackRemote();
-    });
-  }).catch(function() {
-    fallbackRemote();
-  });
-})();
-
 var I18N = {
   zh: {
     title: "edwardp20 · 项目介绍",
@@ -460,7 +457,15 @@ var I18N = {
     homepage: "项目主页",
     other: "其他",
     wiki: "维基",
-    wikiTip: "查看项目底层源码原理解析"
+    wikiTip: "查看项目底层源码原理解析",
+    wikiTitle: "edwardp20 项目维基",
+    wikiSubtitle: "基于源码的技术原理解析",
+    returnHome: "返回主页",
+    grpAlgo: "算法与逻辑",
+    grpEng: "工程与工具",
+    grpSys: "系统与底层",
+    grpCI: "自动化构建",
+    grpWeb: "前端与网络"
   },
   en: {
     title: "edwardp20 · Projects",
@@ -472,7 +477,15 @@ var I18N = {
     homepage: "Homepage",
     other: "Other",
     wiki: "Wiki",
-    wikiTip: "View technical principles based on source code"
+    wikiTip: "View technical principles based on source code",
+    wikiTitle: "edwardp20 Project Wiki",
+    wikiSubtitle: "Technical principles based on source code",
+    returnHome: "Back to Home",
+    grpAlgo: "Algorithm & Logic",
+    grpEng: "Engineering & Tools",
+    grpSys: "System & Low-level",
+    grpCI: "Auto Build & CI/CD",
+    grpWeb: "Frontend & Network"
   }
 };
 
@@ -902,11 +915,56 @@ function renderProjects() {
   countEl.textContent = lang === "zh" ? "共 " + PROJECTS.length + " 个项目" : PROJECTS.length + " projects";
 }
 
+
+function renderWiki() {
+  var main = document.getElementById("wikiMain");
+  if (!main) return;
+  main.innerHTML = "";
+  var dict = I18N[lang];
+  
+  // 将项目按分类分组
+  var groups = {
+    "group-algo": ["cococalc", "-JAVA-"],
+    "group-eng": ["libihatelogs", "myjava-app", "AIDE-Termux-UnofficialBuild"],
+    "group-sys": ["proot", "termux-app-multiusers", "tiny_computer_lotofpermission"],
+    "group-ci": ["bug-free-eureka", "edk2-nightly2", "edk2-edwardp20-build"],
+    "group-web": ["edwardp20.github.io", "edwardp20"]
+  };
+
+  for (var gid in groups) {
+    var projectNames = groups[gid];
+    projectNames.forEach(function(pname) {
+      var p = PROJECTS.find(function(item) { return item.name === pname; });
+      if (!p) return;
+      var d = p[lang];
+      
+      var sec = document.createElement("section");
+      sec.className = "content-section";
+      sec.id = pname.toLowerCase().replace(/[^a-z0-9]/g, '-');
+      sec.setAttribute("data-group", gid);
+
+      var card = document.createElement("div");
+      card.className = "wiki-card";
+
+      var pointsHtml = d.points.map(function(pt) { return "<li>" + pt + "</li>"; }).join("");
+      
+      card.innerHTML =
+        "<h3>" + p.name + " <span class='tag'>" + (p.lang || 'Project') + "</span></h3>" +
+        "<p>" + d.summary + "</p>" +
+        "<ul class='points'>" + pointsHtml + "</ul>";
+      
+      sec.appendChild(card);
+      main.appendChild(sec);
+    });
+  }
+}
+
 function applyLang(l) {
   lang = l;
   try { localStorage.setItem("edwardp20-lang", l); } catch (e) {}
   applyStaticText();
   renderProjects();
+  if(typeof renderWiki === 'function') renderWiki();
 }
 
 function switchView(view) {
@@ -974,6 +1032,88 @@ document.addEventListener("click", function() {
   applyLang(saved === "en" ? "en" : "zh");
 })();
 
+
+// ================= 背景视频本地缓存 =================
+try {
+// ================= 背景视频本地缓存（IndexedDB） =================
+(function initBgVideo() {
+  var video = document.getElementById("bg-video");
+  if (!video) return;
+  var remoteSrc = video.getAttribute("data-src");
+  if (!remoteSrc) return;
+
+  var DB_NAME = "edwardp20-cache";
+  var STORE = "videos";
+  var KEY = "bg-video";
+  var VERSION = "1";
+
+  function openDB() {
+    return new Promise(function(resolve, reject) {
+      var req = indexedDB.open(DB_NAME, 1);
+      req.onupgradeneeded = function(e) {
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE);
+      };
+      req.onsuccess = function() { resolve(req.result); };
+      req.onerror = function() { reject(req.error); };
+    });
+  }
+
+  function getCached() {
+    return openDB().then(function(db) {
+      return new Promise(function(resolve) {
+        var tx = db.transaction(STORE, "readonly");
+        var req = tx.objectStore(STORE).get(KEY);
+        req.onsuccess = function() { resolve(req.result || null); };
+        req.onerror = function() { resolve(null); };
+      });
+    }).catch(function() { return null; });
+  }
+
+  function saveCache(blob) {
+    return openDB().then(function(db) {
+      return new Promise(function(resolve) {
+        var tx = db.transaction(STORE, "readwrite");
+        tx.objectStore(STORE).put({ blob: blob, version: VERSION, ts: Date.now() }, KEY);
+        tx.oncomplete = function() { resolve(true); };
+        tx.onerror = function() { resolve(false); };
+        tx.onabort = function() { resolve(false); };
+      });
+    }).catch(function() { return false; });
+  }
+
+  function playBlob(blob) {
+    var url = URL.createObjectURL(blob);
+    video.src = url;
+    video.play().catch(function() {});
+  }
+
+  function fallbackRemote() {
+    video.src = remoteSrc;
+    video.play().catch(function() {});
+  }
+
+  getCached().then(function(cached) {
+    if (cached && cached.version === VERSION && cached.blob && cached.blob.size > 0) {
+      playBlob(cached.blob);
+      return;
+    }
+    // 首次访问或版本更新：只 fetch 一次，播放 + 存缓存
+    fetch(remoteSrc).then(function(resp) {
+      if (!resp.ok) throw new Error("HTTP " + resp.status);
+      return resp.blob();
+    }).then(function(blob) {
+      if (!blob || blob.size === 0) throw new Error("empty");
+      playBlob(blob);
+      saveCache(blob);
+    }).catch(function() {
+      fallbackRemote();
+    });
+  }).catch(function() {
+    fallbackRemote();
+  });
+})();
+} catch(e) { console.warn('缓存视频失败', e); }
 </script>
 </body>
 </html>
