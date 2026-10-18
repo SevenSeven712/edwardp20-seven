@@ -67,6 +67,21 @@
 
   /* Hero */
   .hero { padding: 64px 0 40px; text-align: center; }
+  
+  /* 入场动画 */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero > * { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .avatar-wrap { animation-delay: 0.1s; }
+  .name { animation-delay: 0.2s; }
+  .handle { animation-delay: 0.25s; }
+  .bio { animation-delay: 0.3s; }
+  .links { animation-delay: 0.4s; }
+  .skills { animation-delay: 0.5s; }
+  
+  .section-head { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: 0.6s; }
 
   .avatar-wrap {
     position: relative;
@@ -168,12 +183,83 @@
   /* Section */
   .section-head {
     display: flex; align-items: baseline; justify-content: space-between;
-    margin: 44px 0 20px;
+    margin: 80px 0 20px;
     padding-bottom: 12px;
     border-bottom: 1px solid rgba(47, 143, 128, 0.16);
   }
+  .section-title-group {
+    display: flex; align-items: center; gap: 12px; 
+    height: 32px; /* 固定高度确保绝对居中 */
+  }
+  .wiki-link {
+    position: relative; /* 为 Tooltip 提供定位基准 */
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: var(--accent);
+    background: rgba(47, 143, 128, 0.08);
+    border: 1px solid rgba(47, 143, 128, 0.3);
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    cursor: pointer; /* 鼠标移上去变成小手 */
+  }
+  /* Tooltip 气泡框 */
+  .wiki-link::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 135%;
+    left: 50%;
+    transform: translateX(-50%) translateY(5px);
+    background: rgba(15, 32, 28, 0.92);
+    color: #fff;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    font-weight: normal;
+    letter-spacing: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10;
+  }
+  /* Tooltip 小三角 */
+  .wiki-link::before {
+    content: "";
+    position: absolute;
+    bottom: 115%;
+    left: 50%;
+    transform: translateX(-50%) translateY(5px);
+    border-width: 5px;
+    border-style: solid;
+    border-color: rgba(15, 32, 28, 0.92) transparent transparent transparent;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 10;
+  }
+  /* 鼠标悬停时显示 Tooltip */
+  .wiki-link:hover::after,
+  .wiki-link:hover::before {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .wiki-link:hover {
+    background: var(--accent);
+    color: #ffffff;
+    border-color: var(--accent);
+    text-decoration: none;
+    transform: translateY(-1px); /* 悬停时微微上浮 */
+    box-shadow: 0 4px 12px rgba(47, 143, 128, 0.25); /* 加个按钮阴影 */
+  }
   .section-head h2 {
-    font-size: 20px; font-weight: 600;
+    font-size: 20px; font-weight: 600; margin: 0;
     display: flex; align-items: center; gap: 10px;
     background: linear-gradient(120deg, #14322d 0%, #2f8f80 100%);
     -webkit-background-clip: text;
@@ -200,12 +286,14 @@
     contain: layout paint style;
     content-visibility: auto;
     contain-intrinsic-size: auto 150px;
-    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
   .card:hover {
     border-color: var(--glass-border-strong);
     background-color: var(--glass-hover);
     box-shadow: var(--glass-shadow);
+    transform: translateY(-3px);
   }
   .card.open {
     border-color: var(--accent);
@@ -220,6 +308,8 @@
   }
   .chev { color: var(--muted); flex-shrink: 0; transition: transform 0.25s; }
   .card.open .chev { transform: rotate(180deg); color: var(--accent); }
+  .card:hover .chev { transform: translateY(2px); }
+  .card.open:hover .chev { transform: rotate(180deg) translateY(-2px); }
 
   .card-brief { color: var(--muted); font-size: 13.5px; margin-top: 5px; }
 
@@ -447,7 +537,13 @@
 
   <main>
     <div class="section-head">
-      <h2 data-i18n="projects"></h2>
+      <div class="section-title-group">
+        <h2 data-i18n="projects"></h2>
+        <a href="wiki.html" class="wiki-link" data-tooltip="查看项目底层源码原理解析">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          <span data-i18n="wiki">维基</span>
+        </a>
+      </div>
       <span class="count" id="count"></span>
     </div>
     <div class="grid" id="grid"></div>
@@ -478,7 +574,9 @@ var I18N = {
     footer: "本页面基于 edwardp20 的公开 GitHub 主页整理，项目所有权归 edwardp20 所有。",
     visit: "前往仓库",
     homepage: "项目主页",
-    other: "其他"
+    other: "其他",
+    wiki: "维基",
+    wikiTip: "查看项目底层源码原理解析"
   },
   en: {
     title: "edwardp20 · Projects",
@@ -488,7 +586,9 @@ var I18N = {
     footer: "This page is compiled from edwardp20's public GitHub profile. All projects belong to edwardp20.",
     visit: "Visit Repository",
     homepage: "Homepage",
-    other: "Other"
+    other: "Other",
+    wiki: "Wiki",
+    wikiTip: "View technical principles based on source code"
   }
 };
 
@@ -496,31 +596,31 @@ var PROJECTS = [
   {
     name: "cococalc",
     url: "https://github.com/edwardp20/cococalc",
-    lang: "HTML", license: "GPL-3.0", fork: false, stars: 0, homepage: "",
+    lang: "Java", license: "GPL-3.0", fork: false, stars: 0, homepage: "",
     zh: {
-      brief: "基于 HTML 的轻量计算器",
-      summary: "一个使用 HTML 构建的轻量级计算器，界面简洁，开箱即用，无需额外依赖。",
-      points: ["纯 HTML 实现，无需构建", "GPL-3.0 开源许可", "界面简洁，直接可用"]
+      brief: "包含编译器前端原理的命令行计算器",
+      summary: "没有使用简单的 eval，而是完整实现了一个编译器前端流水线：词法分析拆分 Token，调度场算法（Shunting-yard）将中缀表达式转为逆波兰式，最后通过栈计算求值，并采用 BigDecimal 保证浮点精度。",
+      points: ["词法分析（Tokenizer）：将输入字符串拆解为数字与运算符", "语法分析（Yard）：利用栈和优先级表，将中缀转为后缀表达式", "求值（Coco）：遍历逆波兰式，遇到数字压栈，遇到符号弹栈计算", "底层使用 java.math.BigDecimal 防止精度丢失"]
     },
     en: {
-      brief: "A lightweight calculator built with HTML",
-      summary: "A lightweight calculator built with HTML, featuring a clean interface and ready to use out of the box without extra dependencies.",
-      points: ["Pure HTML, no build step", "GPL-3.0 licensed", "Clean interface, ready to use"]
+      brief: "A CLI calculator with compiler frontend principles",
+      summary: "Instead of a naive eval, it implements a full compiler frontend: Tokenization, Shunting-yard algorithm to convert infix to RPN, and stack-based evaluation using BigDecimal for precision.",
+      points: ["Lexical analysis (Tokenizer): splits input into numbers and operators", "Syntax analysis (Yard): uses stack and precedence to convert infix to postfix", "Evaluation (Coco): traverses RPN, pushing numbers and computing on operators", "Uses java.math.BigDecimal to prevent precision loss"]
     }
   },
   {
     name: "edwardp20.github.io",
     url: "https://github.com/edwardp20/edwardp20.github.io",
-    lang: "HTML", license: "GPL-3.0", fork: false, stars: 0, homepage: "",
+    lang: "HTML/JS", license: "GPL-3.0", fork: false, stars: 0, homepage: "",
     zh: {
-      brief: "个人博客站点源码",
-      summary: "个人博客的站点源码，托管于 GitHub Pages，用于记录技术文章与日常思考。",
-      points: ["托管于 GitHub Pages", "以 HTML 构建", "GPL-3.0 开源许可"]
+      brief: "无后端的纯静态动态博客",
+      summary: "完全托管于 GitHub Pages。利用 URL 查询参数（Query String）与 marked.js，在浏览器端动态加载并渲染 Markdown 文件，实现了类似动态博客的体验，但无需任何服务器或数据库。",
+      points: ["通过 viewer.html?md=xxx.md 传递文件名", "使用 fetch API 拉取同目录下的 Markdown 文件", "引入 CDN 版 marked.js 将 MD 实时转为 HTML 并注入 DOM", "通过 CNAME 文件绑定自定义域名"]
     },
     en: {
-      brief: "Source code for the personal blog",
-      summary: "Source code of the personal blog, hosted on GitHub Pages for recording technical articles and daily thoughts.",
-      points: ["Hosted on GitHub Pages", "Built with HTML", "GPL-3.0 licensed"]
+      brief: "Serverless dynamic static blog",
+      summary: "Hosted on GitHub Pages. Uses URL query parameters and marked.js to dynamically load and render Markdown files in the browser, achieving a dynamic blog experience without any server.",
+      points: ["Passes filename via viewer.html?md=xxx.md", "Uses fetch API to get the Markdown file", "Uses marked.js CDN to convert MD to HTML in real-time", "Binds custom domain via CNAME file"]
     }
   },
   {
@@ -528,14 +628,14 @@ var PROJECTS = [
     url: "https://github.com/edwardp20/myjava-app",
     lang: "Java", license: "GPL-3.0", fork: false, stars: 2, homepage: "https://waqinguniversityteam.dpdns.org/",
     zh: {
-      brief: "学习 Java 时写下的代码集合",
-      summary: "学习 Java 编程过程中创建的个人项目，记录从基础语法到工程实践的完整过程。代码以学习为目的，结构简洁，适合参考。",
-      points: ["基于 Java 26 与 Gradle 9.4.0 构建", "涵盖基础语法与面向对象示例", "包含 JUnit 测试与 CI 工作流", "使用 ShadowJar 打包发布", "最新版本为 1.15.1"]
+      brief: "完整的 Java 工程化实践",
+      summary: "用于学习现代 Java 工程构建。项目配置了 Gradle 和 ShadowJar 插件，能将所有依赖打包为单一的可执行 Fat Jar，并集成了 JUnit 测试与 GitHub Actions 自动构建流水线。",
+      points: ["使用 Gradle 作为构建工具", "通过 shadowJar 插件打包容纳所有依赖的 Fat Jar", "编写 JUnit 单元测试", "配置 GitHub Actions 实现提交即自动测试与打包"]
     },
     en: {
-      brief: "Code collection written while learning Java",
-      summary: "A personal project created while learning Java, recording the full journey from basic syntax to engineering practice. The code is for learning purposes with a clean structure.",
-      points: ["Built with Java 26 and Gradle 9.4.0", "Covers basic syntax and OOP examples", "Includes JUnit tests and CI workflow", "Packaged and released with ShadowJar", "Latest release is 1.15.1"]
+      brief: "Full Java engineering practice",
+      summary: "For learning modern Java builds. Configured with Gradle and ShadowJar to build a Fat Jar with all dependencies, integrated with JUnit tests and GitHub Actions CI.",
+      points: ["Uses Gradle as build tool", "Packages a Fat Jar via shadowJar plugin", "Includes JUnit unit tests", "GitHub Actions for auto-testing and building on push"]
     }
   },
   {
@@ -543,14 +643,14 @@ var PROJECTS = [
     url: "https://github.com/edwardp20/libihatelogs",
     lang: "Java", license: "Apache-2.0", fork: false, stars: 0, homepage: "",
     zh: {
-      brief: "不依赖现代日志框架的日志库",
-      summary: "一个不使用任何现代日志框架的日志库，追求简洁与可控，适合希望减少依赖的场景。",
-      points: ["Java 实现", "零现代日志库依赖", "Apache-2.0 开源许可", "中、英、法、日多语言文档编写中"]
+      brief: "零依赖的手写极简日志库",
+      summary: "因反感现代日志框架（如 Log4j）的臃肿而手写的轻量级库。底层的 LogWriter 直接利用 Java NIO 的 Files.writeString，通过追加模式实现文件写入，并在上层设计了灵活的日志级别分发机制。",
+      points: ["通过 Files.writeString 与 StandardOpenOption.APPEND 实现 NIO 写入", "解耦日志级别（fatal/error/info）与具体处理器", "零第三方依赖，体积极小"]
     },
     en: {
-      brief: "A logging library without modern logging frameworks",
-      summary: "A logging library that does not rely on any modern logging framework, pursuing simplicity and control for scenarios where minimal dependencies matter.",
-      points: ["Java implementation", "No modern logging dependency", "Apache-2.0 licensed", "Multi-language docs in progress (ZH/EN/FR/JA)"]
+      brief: "Zero-dependency minimalist log library",
+      summary: "Handwritten out of frustration with bulky modern frameworks. Uses Java NIO Files.writeString in append mode for file output, with a flexible log level distribution mechanism.",
+      points: ["NIO writing via Files.writeString with APPEND option", "Decouples log levels (fatal/error/info) from processors", "Zero third-party dependencies"]
     }
   },
   {
@@ -558,14 +658,14 @@ var PROJECTS = [
     url: "https://github.com/edwardp20/proot",
     lang: "C", license: "GPL-2.0", fork: true, stars: 0, homepage: "https://proot-me.github.io",
     zh: {
-      brief: "无特权 chroot、mount --bind 与 binfmt_misc",
-      summary: "无需特权或额外配置即可在 Linux 上使用 chroot、mount --bind 与 binfmt_misc 的工具，Fork 自 proot-me/proot。",
-      points: ["C 语言实现", "GPL-2.0 开源许可", "Fork 自 proot-me/proot", "无需 root 即可运行"]
+      brief: "无特权 Linux 容器化原理",
+      summary: "利用 Linux 的 ptrace 系统调用，在用户态拦截并重定向进程对文件系统的访问路径。这使得普通用户无需 root 权限也能运行 chroot（改变根目录），是 Android 上运行完整 Linux 的核心基石。",
+      points: ["基于 ptrace（进程跟踪）技术拦截系统调用", "在用户态伪造 chroot 的根目录环境", "无需特权或额外配置即可在 Linux/Android 上运行"]
     },
     en: {
-      brief: "Privilege-free chroot, mount --bind and binfmt_misc",
-      summary: "A tool that enables chroot, mount --bind and binfmt_misc on Linux without privilege or setup, forked from proot-me/proot.",
-      points: ["C implementation", "GPL-2.0 licensed", "Forked from proot-me/proot", "Runs without root"]
+      brief: "Privilege-free Linux containerization",
+      summary: "Uses ptrace to intercept and redirect file system paths in user space. Allows running chroot without root, the core building block for running Linux on Android.",
+      points: ["Uses ptrace to intercept syscalls", "Fakes chroot root directory in user space", "Runs on Linux/Android without privilege"]
     }
   },
   {
@@ -573,14 +673,14 @@ var PROJECTS = [
     url: "https://github.com/edwardp20/termux-app-multiusers",
     lang: "Java", license: "NOASSERTION", fork: true, stars: 0, homepage: "https://f-droid.org/en/packages/com.termux",
     zh: {
-      brief: "支持多用户的 Termux 终端模拟器",
-      summary: "Termux 的多用户版本。Termux 是 Android 上的终端模拟器，可通过大量软件包扩展，本仓库为 Fork。",
-      points: ["Java 实现", "Fork 仓库", "面向 Android 平台", "可通过 F-Droid 分发"]
+      brief: "支持隔离多用户的 Termux 分支",
+      summary: "修改了 Termux 的底层环境隔离逻辑，允许在同一台 Android 设备上创建多个相互独立的 Linux 用户环境（不同的环境变量、文件系统和软件包），互不干扰。",
+      points: ["修改了 Android 原生层的用户级隔离逻辑", "支持多实例、多文件系统空间共存"]
     },
     en: {
-      brief: "Multi-user variant of the Termux terminal emulator",
-      summary: "A multi-user variant of Termux, a terminal emulator for Android extendible by a variety of packages. This is a forked repository.",
-      points: ["Java implementation", "Forked repository", "Targets Android", "Distributed via F-Droid"]
+      brief: "Multi-user Termux fork",
+      summary: "Modifies Termux's isolation logic to support multiple independent Linux user environments on the same Android device, with separate variables, filesystems, and packages.",
+      points: ["Modifies Android native user-level isolation", "Supports multiple instances and filesystems"]
     }
   },
   {
@@ -588,29 +688,29 @@ var PROJECTS = [
     url: "https://github.com/edwardp20/AIDE-Termux-UnofficialBuild",
     lang: "Java", license: "Apache-2.0", fork: false, stars: 0, homepage: "",
     zh: {
-      brief: "AIDE 与 Termux 的非官方构建",
-      summary: "AIDE 与 Termux 的非官方构建版本，用于在 Android 设备上进行开发与终端操作。",
-      points: ["Java 实现", "Apache-2.0 开源许可", "非官方构建"]
+      brief: "Android 开发环境的非官方整合包",
+      summary: "将 AIDE（Android 上的集成开发环境）与 Termux（终端模拟器）进行整合构建，使得开发者可以直接在 Android 设备上进行代码编写、本地编译与终端操作。",
+      points: ["整合了移动端 IDE 与终端", "通过非官方编译优化了 Android 上的开发体验"]
     },
     en: {
-      brief: "Unofficial build of AIDE and Termux",
-      summary: "An unofficial build combining AIDE and Termux for development and terminal use on Android devices.",
-      points: ["Java implementation", "Apache-2.0 licensed", "Unofficial build"]
+      brief: "Unofficial Android IDE & Terminal bundle",
+      summary: "Integrates AIDE and Termux, allowing developers to write code, compile locally, and use the terminal directly on Android devices.",
+      points: ["Integrates mobile IDE and terminal", "Unofficial build for better Android dev experience"]
     }
   },
   {
     name: "-JAVA-",
     url: "https://github.com/edwardp20/-JAVA-",
-    lang: null, license: null, fork: true, stars: 0, homepage: "",
+    lang: "Java", license: null, fork: true, stars: 0, homepage: "",
     zh: {
-      brief: "面向新手的 Java 小程序",
-      summary: "一个简单的小程序，供新手开发者学习，包含猜数字游戏等入门示例。",
-      points: ["Java 实现", "猜数字游戏示例", "面向新手开发者", "Fork 仓库"]
+      brief: "基础控制台交互项目",
+      summary: "适合新手的控制台练手项目。通过 java.util.Scanner 读取用户输入，使用 java.util.Random 生成随机数，在 while 循环中利用条件分支（if-else）判断输入大小，直到条件满足。",
+      points: ["使用 Scanner 接收控制台输入", "使用 Random 生成目标数字", "通过 while 循环与 if 判断实现交互逻辑"]
     },
     en: {
-      brief: "Simple Java programs for beginners",
-      summary: "A simple small program for beginner developers to learn, including a number guessing game and other introductory examples.",
-      points: ["Java implementation", "Number guessing game example", "Beginner-friendly", "Forked repository"]
+      brief: "Basic console interaction project",
+      summary: "Beginner-friendly console project. Uses Scanner for input, Random for number generation, and while/if-else loops for interaction logic.",
+      points: ["Scanner for console input", "Random for target number", "while/if logic for game loop"]
     }
   },
   {
@@ -618,29 +718,29 @@ var PROJECTS = [
     url: "https://github.com/edwardp20/edwardp20",
     lang: null, license: null, fork: false, stars: 0, homepage: "",
     zh: {
-      brief: "GitHub 个人主页仓库",
-      summary: "GitHub 个人主页仓库，展示个人简介、母语与主力编程语言等信息。",
-      points: ["个人主页仓库", "母语为中文", "主力语言为 Java", "含个人趣味简介"]
+      brief: "GitHub Profile 渲染机制",
+      summary: "这是 GitHub 的特殊仓库。当仓库名与用户名完全一致时，GitHub 主页会读取该仓库根目录下的 README.md，将其作为个人主页的展示内容（Profile README）。",
+      points: ["仓库名必须为 edwardp20/edwardp20", "README.md 内容自动渲染至主页顶部"]
     },
     en: {
-      brief: "GitHub profile repository",
-      summary: "The GitHub profile repository, displaying personal introduction, native language and primary programming language.",
-      points: ["Profile repository", "Native language: Chinese", "Primary language: Java", "Includes a fun personal note"]
+      brief: "GitHub Profile rendering mechanism",
+      summary: "A special repo. When the repo name matches the username exactly, GitHub renders its README.md at the top of the profile page.",
+      points: ["Repo must be named edwardp20/edwardp20", "README.md renders on the profile"]
     }
   },
   {
     name: "bug-free-eureka",
     url: "https://github.com/edwardp20/bug-free-eureka",
-    lang: null, license: "MIT", fork: false, stars: 0, homepage: "",
+    lang: "YAML", license: "MIT", fork: false, stars: 0, homepage: "",
     zh: {
-      brief: "MobileGL 构建仓库",
-      summary: "MobileGL 的构建相关仓库，用于探索移动端图形渲染。",
-      points: ["MIT 开源许可", "构建仓库", "移动端图形渲染"]
+      brief: "GitHub Actions 自动化编译容器",
+      summary: "这个仓库没有业务代码，纯粹是一个自动化编译节点。利用 GitHub Actions 的免费算力，通过 .github/workflows/build.yml 脚本定时拉取 MobileGL 源码并在云端完成构建。",
+      points: ["纯 CI/CD 仓库，无项目源码", "利用 GitHub Actions 云端编译 MobileGL"]
     },
     en: {
-      brief: "MobileGL build repository",
-      summary: "A build-related repository for MobileGL, exploring mobile graphics rendering.",
-      points: ["MIT licensed", "Build repository", "Mobile graphics rendering"]
+      brief: "GitHub Actions auto-build container",
+      summary: "No business code, purely a build node. Uses GitHub Actions and build.yml to pull MobileGL source and build it in the cloud.",
+      points: ["Pure CI/CD repo", "Builds MobileGL in the cloud via GitHub Actions"]
     }
   },
   {
@@ -648,29 +748,29 @@ var PROJECTS = [
     url: "https://github.com/edwardp20/tiny_computer_lotofpermission",
     lang: "Dart", license: "GPL-3.0", fork: true, stars: 0, homepage: "",
     zh: {
-      brief: "在 Android 上运行 Debian 12 桌面",
-      summary: "在 Android 设备上点击即用的 Debian 12 桌面环境，预装 Fcitx 拼音与常用软件，无需安装 Termux，本仓库为 Fork。",
-      points: ["Dart 实现", "GPL-3.0 开源许可", "Fork 仓库", "Debian 12 + XFCE/LXQt", "预装 Fcitx 拼音"]
+      brief: "在 Android 运行完整的 Debian 桌面",
+      summary: "基于 Dart 开发的 Android App，内部打包了一个完整的 Debian 12 (ARM64) Rootfs 镜像。利用 PRoot 挂载系统环境，并通过 XSDL 将内部的 XFCE 桌面图形渲染至手机屏幕。",
+      points: ["使用 Dart 开发 Android 前端", "内嵌完整的 Debian 12 ARM64 镜像", "通过 PRoot 伪根目录运行 Linux 软件", "利用 XSDL 实现桌面图形输出"]
     },
     en: {
-      brief: "Run Debian 12 desktop on Android",
-      summary: "A click-to-run Debian 12 desktop environment on Android, preinstalled with Fcitx Pinyin and useful packages, no Termux required. Forked repository.",
-      points: ["Dart implementation", "GPL-3.0 licensed", "Forked repository", "Debian 12 + XFCE/LXQt", "Fcitx Pinyin preinstalled"]
+      brief: "Full Debian desktop on Android",
+      summary: "Dart Android app bundling a full Debian 12 ARM64 Rootfs. Uses PRoot to mount the environment and XSDL to render the XFCE desktop to the phone screen.",
+      points: ["Dart Android frontend", "Bundled Debian 12 ARM64 image", "Runs Linux apps via PRoot", "XSDL for graphical output"]
     }
   },
   {
     name: "edk2-nightly2",
     url: "https://github.com/edwardp20/edk2-nightly2",
-    lang: null, license: "BSD-3-Clause", fork: false, stars: 0, homepage: "",
+    lang: "YAML", license: "BSD-3-Clause", fork: false, stars: 0, homepage: "",
     zh: {
-      brief: "EDK II 夜间构建仓库",
-      summary: "EDK II（UEFI 固件开发框架）相关的夜间构建仓库。",
-      points: ["BSD-3-Clause 开源许可", "UEFI 固件开发", "夜间构建"]
+      brief: "UEFI 固件的云端夜间构建",
+      summary: "UEFI (EDK II) 固件源码极其庞大，本地编译环境极为复杂。这个仓库利用 GitHub Actions，设定定时任务（Cron），每晚自动拉取官方最新源码进行编译。",
+      points: ["针对 EDK II (UEFI) 的持续集成", "通过 Cron 定时任务实现夜间自动构建"]
     },
     en: {
-      brief: "EDK II nightly build repository",
-      summary: "A nightly build repository related to EDK II, the UEFI firmware development framework.",
-      points: ["BSD-3-Clause licensed", "UEFI firmware development", "Nightly builds"]
+      brief: "Nightly cloud builds for UEFI firmware",
+      summary: "EDK II source is huge and hard to build locally. This repo uses GitHub Actions Cron jobs to pull and compile the latest source every night.",
+      points: ["CI for EDK II (UEFI)", "Cron jobs for nightly auto-builds"]
     }
   },
   {
@@ -678,14 +778,14 @@ var PROJECTS = [
     url: "https://github.com/edwardp20/edk2-edwardp20-build",
     lang: "C", license: "NOASSERTION", fork: true, stars: 0, homepage: "https://github.com/tianocore/tianocore.github.io/wiki/EDK-II",
     zh: {
-      brief: "EDK II 构建仓库（Fork）",
-      summary: "EDK II 的构建仓库，基于 TianoCore 的 UEFI 固件开发框架，本仓库为 Fork。",
-      points: ["C 实现", "Fork 仓库", "基于 TianoCore", "UEFI 固件开发"]
+      brief: "自定义的 UEFI 固件编译分支",
+      summary: "基于 TianoCore 官方的 EDK II 框架 Fork 的构建仓库，用于编译自定义的 UEFI 固件（BIOS），需要配置 C 语言交叉编译环境。",
+      points: ["基于 TianoCore/EDK II", "用于编译自定义 UEFI 固件"]
     },
     en: {
-      brief: "EDK II build repository (fork)",
-      summary: "A build repository for EDK II, based on the TianoCore UEFI firmware development framework. Forked repository.",
-      points: ["C implementation", "Forked repository", "Based on TianoCore", "UEFI firmware development"]
+      brief: "Custom UEFI firmware build fork",
+      summary: "A fork of TianoCore EDK II for building custom UEFI firmware, requiring C cross-compilation setup.",
+      points: ["Based on TianoCore/EDK II", "Builds custom UEFI firmware"]
     }
   }
 ];
@@ -705,6 +805,11 @@ function applyStaticText() {
   var btns = document.querySelectorAll("#langMenu button");
   for (var j = 0; j < btns.length; j++) {
     btns[j].classList.toggle("active", btns[j].getAttribute("data-lang") === lang);
+  }
+  // 更新维基按钮的悬浮提示语
+  var wikiLink = document.querySelector(".wiki-link");
+  if (wikiLink && dict.wikiTip) {
+    wikiLink.setAttribute("data-tooltip", dict.wikiTip);
   }
 }
 
